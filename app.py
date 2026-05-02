@@ -12,6 +12,10 @@ import json
 from io import BytesIO
 from PIL import Image
 import math
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Hostel location (you can change these coordinates to your actual hostel location)
 HOSTEL_LAT = 20.0367
@@ -49,20 +53,29 @@ EXCEL_FOLDER = 'static/excel'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['FACE_FOLDER'] = FACE_FOLDER
 app.config['EXCEL_FOLDER'] = EXCEL_FOLDER
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'please-change-this-secret')
 
 # Create directories if they don't exist
 for folder in [UPLOAD_FOLDER, FACE_FOLDER, EXCEL_FOLDER]:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-# MySQL Connection
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="12345678",
-    database="hostel_management"
-)
+# MySQL Connection (configured via environment variables)
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASSWORD = os.getenv('DB_PASSWORD', '12345678')
+DB_NAME = os.getenv('DB_NAME', 'hostel_management')
+
+try:
+    db = mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
+    )
+except mysql.connector.Error as err:
+    print("Error connecting to database:", err)
+    raise
 
 # Ensure hostel leaves table exists
 cursor = db.cursor()
@@ -802,4 +815,5 @@ def export_attendance_excel():
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ('true', '1', 'yes')
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=debug_mode)
