@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: hostel-management
+    env: docker
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    plan: free
+    buildCommand: ""
+    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2"
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: FLASK_SECRET_KEY
+        value: "please-set-a-strong-secret"
+      - key: DB_HOST
+        value: "your-db-host"
+      - key: DB_USER
+        value: "your-db-user"
+      - key: DB_PASSWORD
+        value: "your-db-password"
+      - key: DB_NAME
+        value: "hostel_management"
