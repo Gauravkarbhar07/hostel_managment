@@ -4,29 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Turf Booking Receipt</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f2f2f7; margin: 0; padding: 0; }
-    .container { max-width: 760px; margin: 24px auto; padding: 20px; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .title { margin: 0; font-size: 24px; color: #111; }
-    .subtitle { margin: 4px 0 0; font-size: 14px; color: #666; }
-    .info-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 20px; }
-    .info-card { background: #f8f9ff; padding: 16px; border-radius: 12px; border: 1px solid #e3e6ff; }
-    .info-card strong { display: block; margin-bottom: 8px; color: #333; }
-    .info-card span { color: #555; word-break: break-word; }
-    .note { background: #fff7e6; color: #5a4200; padding: 14px; border-radius: 12px; border: 1px solid #ffecb5; margin-bottom: 22px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    .btn { border: none; border-radius: 12px; padding: 12px 18px; font-size: 14px; font-weight: 700; cursor: pointer; color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-    .btn-primary { background: #0d6efd; }
-    .btn-secondary { background: #6c757d; }
-    .btn-print { background: #198754; }
-    .footer { margin-top: 24px; font-size: 13px; color: #666; }
-    @media print {
-      .actions { display: none; }
-      body { background: white; }
-      .container { box-shadow: none; margin: 0; border-radius: 0; }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/turf_receipt.css') }}">
 </head>
 <body>
   <div class="container">
