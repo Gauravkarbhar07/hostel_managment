@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile | Shivneri Hostel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f4f6fc;
+      color: #121826;
+      line-height: 1.4;
+    }
+
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .avatar-circle {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 12px -8px rgba(0, 98, 204, 0.2);
+    }
+
+    .college-info h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1e293b, #2d3a4e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .back-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 48px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-container {
+      max-width: 800px;
+      margin: 32px auto;
+      padding: 0 28px;
+    }
+
+    .profile-card {
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+      padding: 2rem;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 4px solid #3b82f6;
+      padding-left: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: white;
+    }
+
+    .face-capture-section {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .face-preview {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 12px;
+      margin: 16px auto;
+      display: none;
+    }
+
+    .capture-btn {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 48px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 8px;
+    }
+
+    .location-section {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 48px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 24px;
+      transition: transform 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .message {
+      padding: 12px 24px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #f87171;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-container {
+        padding: 0 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="brand-area">
+    <div class="avatar-circle">
+      <img src="https://media.licdn.com/dms/image/v2/C4E0BAQFsniM2KNnvgw/company-logo_200_200/company-logo_200_200/0/1630631339435?e=2147483647&v=beta&t=DCm5fhS1YNa7YhsqIevh3rO4ld7NmHlX7HwLVcWhp4s" alt="MCOERC Logo">
+    </div>
+    <div class="college-info">
+      <h2>Student Profile</h2>
+    </div>
+  </div>
+  <a href="/student" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<div class="profile-container">
+  {% if request.args.get('message') %}
+    <div class="message {% if 'already registered' in request.args.get('message') %}error{% else %}success{% endif %}">
+      {{ request.args.get('message').replace('+', ' ') }}
+    </div>
+  {% endif %}
+
+  <div class="profile-card">
+    <div class="card-title">
+      <span>👤</span> Personal Information
+    </div>
+
+    <form action="/update_profile" method="POST" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Student ID *</label>
+          <input type="text" name="student_id" class="form-input" required placeholder="MCOERCXXXX">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" name="full_name" class="form-input" required placeholder="Enter your full name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">College *</label>
+          <select name="college" class="form-select" required>
+            <option value="">Select College</option>
+            <option value="pharmacy">Pharmacy</option>
+            <option value="engineering">Engineering</option>
+            <option value="diploma">Diploma</option>
+            <option value="nursing">Nursing</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Year *</label>
+          <select name="year" class="form-select" required>
+            <option value="">Select Year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label class="form-label">Face Registration {% if profile_registered %}(Already Registered - Cannot Update){% else %}(Required for Attendance){% endif %}</label>
+        {% if not profile_registered %}
+        <div class="face-capture-section">
+          <p>📸 Please capture a clear photo of your face for attendance verification</p>
+          <video id="video" width="300" height="225" autoplay style="border-radius: 12px; margin: 16px auto; display: block;"></video>
+          <img id="facePreview" class="face-preview" alt="Face Preview">
+          <br>
+          <button type="button" class="capture-btn" onclick="captureFace()">📷 Capture Face</button>
+          <input type="file" id="faceFile" name="face_image" accept="image/*" style="display: none;">
+        </div>
+        {% else %}
+        <div class="face-capture-section" style="background: #fef3c7; border-color: #f59e0b;">
+          <p>✅ Your face has been registered for attendance verification.</p>
+          <p style="color: #92400e; font-size: 0.9rem;">For security reasons, face data cannot be updated once registered.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="form-group full-width">
+        <div class="location-section">
+          <strong>📍 Location Tracking:</strong> Your location will be automatically captured for attendance verification.
+          <br><small>⚠️ <strong>Important:</strong> Attendance can only be marked when you are within 500 meters of the hostel premises.</small>
+          <input type="hidden" name="location_lat" id="locationLat">
+          <input type="hidden" name="location_lng" id="locationLng">
+          <div id="locationStatus">Getting your location...</div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">💾 Save Profile</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Only initialize camera if profile is not registered
+  {% if not profile_registered %}
+  let video = document.getElementById('video');
+  let canvas = document.createElement('canvas');
+  let faceFileInput = document.getElementById('faceFile');
+
+  // Access camera
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        video.srcObject = stream;
+      })
+      .catch(function(error) {
+        console.log("Camera access denied");
+        document.querySelector('.face-capture-section p').textContent = 'Camera access required for face registration';
+      });
+  }
+
+  function captureFace() {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    canvas.toBlob(function(blob) {
+      let file = new File([blob], "face.jpg", { type: "image/jpeg" });
+      let container = new DataTransfer();
+      container.items.add(file);
+      faceFileInput.files = container.files;
+
+      // Show preview
+      let facePreview = document.getElementById('facePreview');
+      facePreview.src = canvas.toDataURL('image/jpeg');
+      facePreview.style.display = 'block';
+    }, 'image/jpeg');
+  }
+  {% endif %}
+
+  // Get user location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        document.getElementById('locationLat').value = position.coords.latitude;
+        document.getElementById('locationLng').value = position.coords.longitude;
+        document.getElementById('locationStatus').textContent = 'Location captured successfully!';
+      },
+      function(error) {
+        document.getElementById('locationStatus').textContent = 'Location access denied. Please enable location services.';
+      }
+    );
+  } else {
+    document.getElementById('locationStatus').textContent = 'Geolocation is not supported by this browser.';
+  }
+</script>

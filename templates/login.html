@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hostel Login</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+<h1>🏠 Hostel Management Login</h1>
+{% if message %}
+<div class="message">{{ message }}</div>
+{% endif %}
+<form action="/login" method="POST">
+<div class="field">
+<label>Email</label>
+<input type="email" name="email" required>
+</div>
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" required>
+</div>
+<button type="submit">Login</button>
+</form>
+<div class="footer-link">
+New student? <a href="/register">Register here</a>
+</div>
+</div>
+</body>
+</html>

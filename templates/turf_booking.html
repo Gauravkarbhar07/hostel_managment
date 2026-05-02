@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turf Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #1a9e5c;
+    --green-light: #d4f5e2;
+    --green-dark: #0f6e3e;
+    --surface: #ffffff;
+    --bg: #f4f7f5;
+    --border: #e0e8e4;
+    --text: #1a2820;
+    --muted: #6b8278;
+    --red: #e5342a;
+    --amber: #d97706;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page-header { text-align: center; margin-bottom: 2rem; }
+
+  .page-header .badge {
+    display: inline-block;
+    background: var(--green-light);
+    color: var(--green-dark);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  .page-header h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .page-header p { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-width: 520px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .card-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .field { margin-bottom: 1rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color 0.15s, background 0.15s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--green);
+    background: #fff;
+  }
+
+  input[readonly] {
+    color: var(--green-dark);
+    font-weight: 600;
+    background: var(--green-light);
+    border-color: transparent;
+    cursor: default;
+  }
+
+  /* Slot grid */
+  .slot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .slot-option { position: relative; }
+
+  .slot-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slot-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.15s;
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .slot-option input:checked + label {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green-dark);
+  }
+
+  .slot-option label:hover { border-color: var(--green); color: var(--text); }
+
+  /* Payment buttons */
+  .pay-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .upi-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .upi-select:hover { border-color: var(--green); color: var(--text); }
+  .upi-select.active {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green-dark);
+  }
+
+  .upi-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .phonepe-icon { background: #5f259f; color: #fff; }
+  .gpay-icon { background: #4285f4; color: #fff; }
+
+  .pay-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .btn-outline {
+    padding: 9px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-outline:hover { background: var(--bg); border-color: var(--green); color: var(--green-dark); }
+
+  .payment-status {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .payment-status.selected {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+
+  #upi_qr {
+    display: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  #upi_qr p { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  #upi_qr img { width: 180px; height: 180px; border-radius: 8px; }
+  #upi_qr .upi-id {
+    margin-top: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    display: inline-block;
+  }
+
+  .rules-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--green-dark);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .rules-link:hover { text-decoration: underline; }
+
+  .amount-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--green-light);
+    border: 1px solid #b2dcc6;
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+  }
+
+  .amount-row .label { font-size: 13px; color: var(--green-dark); }
+  .amount-row .amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-submit:hover { background: var(--green-dark); }
+  .btn-submit:active { transform: scale(0.99); }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1rem;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .info-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+  }
+
+  .chip {
+    font-size: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .chip span { color: var(--text); font-weight: 500; }
+
+  /* Rules accordion */
+  .rules-accordion {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .rules-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    gap: 8px;
+  }
+
+  .rules-toggle svg { transition: transform 0.2s; flex-shrink: 0; }
+  .rules-toggle.open svg { transform: rotate(180deg); }
+
+  .rules-body {
+    display: none;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+
+  .rules-body.open { display: block; }
+
+  .rules-body ol {
+    padding-left: 1.2rem;
+  }
+
+  .rules-body li {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+
+  .rules-body li:last-child { margin-bottom: 0; }
+
+  .rules-body li strong { color: var(--text); }
+
+  .payment-process-box {
+    margin-top: 1rem;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+
+  .payment-process-box p {
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.6;
+  }
+
+  .payment-process-box strong { color: #78350f; }
+
+  .card-section label input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green);
+  }
+
+  .card-section label {
+    font-size: 13px;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="badge">Hostel Residents Only</div>
+  <h1>Book Turf Slot</h1>
+  <p>MCOERC Shivneri Hostel &mdash; cricket Ground</p>
+</div>
+
+<div class="info-chips">
+  <div class="chip">⏰ <span>5:30 AM – 10 PM</span></div>
+  <div class="chip">₹ <span>280 / hour</span></div>
+  <div class="chip">👥 <span>Max 14 players</span></div>
+  <div class="chip">📅 <span>Book 24 hrs ahead</span></div>
+</div>
+
+<!-- Rules Accordion (outside card) -->
+<div style="max-width:520px;margin:0 auto 1.25rem;">
+  <div class="rules-accordion">
+    <button class="rules-toggle" id="rulesToggle" type="button">
+      <span>📋 Turf Rules &amp; Instructions</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="rules-body" id="rulesBody">
+      <ol>
+        <li>Only hostel residents are allowed. Entry of non-hostel students/guests is <strong>strictly prohibited</strong>.</li>
+        <li>Turf slots must be booked at least <strong>24 hours in advance</strong> through the designated committee.</li>
+        <li><strong>Slot Timings —</strong> Morning: 5:30 AM – 7:30 AM &nbsp;|&nbsp; Evening: 3:00 PM – 10:00 PM &nbsp;|&nbsp; Holidays: Full day (5:30 AM – 10:00 PM)</li>
+        <li>Fees: <strong>₹280 per hour</strong> per slot.</li>
+        <li>Maximum <strong>14 players</strong> per slot are allowed.</li>
+        <li>Players must start and end on time. <strong>No extra time</strong> will be given.</li>
+        <li>Late arrivals will not get extra time. Turf must be <strong>vacated immediately</strong> after the slot.</li>
+        <li><strong>No refunds</strong> for cancellations within 12 hours of the booked slot.</li>
+        <li>Any damage to turf/property will result in <strong>fine or suspension</strong>.</li>
+        <li>No smoking, alcohol, or prohibited substances are allowed.</li>
+        <li>Play is at your own risk. Management is <strong>not responsible</strong> for injuries.</li>
+        <li>Bookings are <strong>non-transferable</strong> without permission.</li>
+        <li>Committee holds full authority to <strong>cancel/reschedule</strong> slots if required.</li>
+        <li>Any violation of rules may lead to <strong>temporary or permanent ban</strong>.</li>
+      </ol>
+      <div class="payment-process-box">
+        <p><strong>Payment &amp; Entry Process —</strong> All payments must be made in the Account Section. After payment, collect the <strong>registration chit</strong>. Submit the chit to <strong>Mr. Ghotekar</strong>. Only after submission are you allowed to start playing.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form action="/book_turf" method="POST">
+
+  <div class="card">
+
+    <!-- Student Details -->
+    <div class="card-section">
+      <div class="section-label">Student Details</div>
+      <div class="field">
+        <label for="student_id">Student Mobile No.</label>
+        <input type="tel" id="student_id" name="student_id" placeholder="Enter your 10-digit mobile number" required maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits">
+      </div>
+      <div class="field">
+        <label for="group_name">Group Name</label>
+        <input type="text" id="group_name" name="group_name" placeholder="e.g. 1st year ECE" required>
+      </div>
+    </div>
+
+    <!-- Slot Details -->
+    <div class="card-section">
+      <div class="section-label">Slot Details</div>
+      <div class="field">
+        <label>Select Slot</label>
+        <div class="slot-grid">
+          <div class="slot-option">
+            <input type="radio" name="slot_time" id="slot1" value="Morning 5:30 AM - 7:30 AM" required>
+            <label for="slot1">Morning 5:30 AM – 7:30 AM</label>
+          </div>
+          <div class="slot-option">
+            <input type="radio" name="slot_time" id="slot2" value="Evening 3:00 PM - 10:00 PM">
+            <label for="slot2">Evening 3:00 PM – 10:00 PM</label>
+          </div>
+          <div class="slot-option">
+            <input type="radio" name="slot_time" id="slot3" value="Holiday Full Day 5:30 AM - 10:00 PM">
+            <label for="slot3">Holiday Full Day 5:30 AM – 10:00 PM</label>
+          </div>
+          <div class="slot-option">
+            <input type="radio" name="slot_time" id="slot4" value="Evening 3:00 PM - 5:30 PM">
+            <label for="slot4">Evening 3:00 PM – 5:30 PM</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="booking_date">Booking Date</label>
+        <input type="date" id="booking_date" name="booking_date" required>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    <div class="card-section">
+      <div class="section-label">Payment</div>
+
+      <div class="pay-methods">
+        <button type="button" class="upi-select" data-method="PhonePe">
+          <div class="upi-icon phonepe-icon">P</div> PhonePe
+        </button>
+        <button type="button" class="upi-select" data-method="GPay">
+          <div class="upi-icon gpay-icon">G</div> GPay
+        </button>
+      </div>
+
+      <input type="hidden" name="payment_method" id="payment_method">
+
+      <div id="selected-payment" class="payment-status">
+        Select PhonePe or GPay to proceed with payment.
+      </div>
+
+      <div class="pay-actions">
+        <button type="button" id="open_upi" class="btn-outline">↗ Open UPI App</button>
+        <button type="button" id="show_qr" class="btn-outline">⬛ Show QR Code</button>
+      </div>
+
+      <div id="upi_qr">
+        <p>Scan the QR code or use UPI ID to pay</p>
+        <img src="https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=upi://pay?pa=9028907803@ibl&pn=HostelTurf&am=280&cu=INR" alt="UPI QR code">
+        <div class="upi-id">UPI ID: 9028907803@ibl</div>
+      </div>
+
+      <div class="field">
+        <label for="utr_number">UTR / Transaction ID</label>
+        <input type="text" id="utr_number" name="utr_number" placeholder="Enter 12-digit UTR number after payment" required maxlength="12" pattern="\d{12}" title="Enter exactly 12 digits">
+      </div>
+
+      <div class="amount-row">
+        <span class="label">Amount to Pay</span>
+        <span class="amount">₹280</span>
+      </div>
+    </div>
+
+    <!-- Rules & Submit -->
+    <div class="card-section">
+      <div class="field" style="margin-bottom: 1rem;">
+        <label>
+          <input type="checkbox" id="agree_rules" name="agree_rules" required>
+          I agree to follow the turf rules and instructions.
+        </label>
+      </div>
+      <div class="field" style="margin-bottom: 1.25rem;">
+        <label>Turf Rules PDF</label>
+        <a class="rules-link" href="{{ url_for('static', filename='Turf hostel.pdf') }}" target="_blank" rel="noreferrer">
+          📄 Read Turf Rules PDF
+        </a>
+      </div>
+      <button type="submit" class="btn-submit" disabled>
+        ✓ Confirm Payment &amp; Book Slot
+      </button>
+    </div>
+
+  </div>
+
+</form>
+
+<p class="disclaimer">
+  By booking, you agree to the turf rules.<br>
+  No refunds within 12 hours of the booked slot.
+</p>
+
+<script>
+const upiButtons = document.querySelectorAll('.upi-select');
+const paymentInput = document.getElementById('payment_method');
+const selectedPayment = document.getElementById('selected-payment');
+const upiQr = document.getElementById('upi_qr');
+const openUpiButton = document.getElementById('open_upi');
+const showQrButton = document.getElementById('show_qr');
+const agreeRulesCheckbox = document.getElementById('agree_rules');
+const submitButton = document.querySelector('.btn-submit');
+const upiUri = 'upi://pay?pa=9028907803@ibl&pn=HostelTurf&am=280&cu=INR';
+
+if (agreeRulesCheckbox) {
+  agreeRulesCheckbox.addEventListener('change', () => {
+    submitButton.disabled = !agreeRulesCheckbox.checked;
+  });
+}
+
+upiButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const method = button.getAttribute('data-method');
+    paymentInput.value = method;
+    selectedPayment.textContent = method + ' selected. Complete the payment in your UPI app.';
+    selectedPayment.classList.add('selected');
+    upiButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+    window.location.href = upiUri;
+  });
+});
+
+openUpiButton.addEventListener('click', () => {
+  if (!paymentInput.value) { alert('Please select PhonePe or GPay first.'); return; }
+  window.location.href = upiUri;
+});
+
+showQrButton.addEventListener('click', () => {
+  const isVisible = upiQr.style.display === 'block';
+  upiQr.style.display = isVisible ? 'none' : 'block';
+  showQrButton.textContent = isVisible ? '⬛ Show QR Code' : '✕ Hide QR Code';
+});
+
+document.getElementById('rulesToggle').addEventListener('click', function () {
+  this.classList.toggle('open');
+  document.getElementById('rulesBody').classList.toggle('open');
+});
+
+const turfForm = document.querySelector('form[action="/book_turf"]');
+turfForm.addEventListener('submit', event => {
+  const utrInput = turfForm.querySelector('[name="utr_number"]');
+  const agreementCheckbox = turfForm.querySelector('[name="agree_rules"]');
+  if (!paymentInput.value) {
+    event.preventDefault();
+    alert('Please select PhonePe or GPay and complete payment before booking.');
+    return;
+  }
+  if (agreementCheckbox && !agreementCheckbox.checked) {
+    event.preventDefault();
+    alert('Please agree to the turf rules before confirming payment.');
+    agreementCheckbox.focus();
+    return;
+  }
+  const utrValue = utrInput.value.trim();
+  if (!/^[0-9]{12}$/.test(utrValue)) {
+    event.preventDefault();
+    alert('Please enter a valid 12-digit UTR number.');
+    utrInput.focus();
+    return;
+  }
+});
+</script>
+</body>
+</html>

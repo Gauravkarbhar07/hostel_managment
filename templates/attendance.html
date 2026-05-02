@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance | Shivneri Hostel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f4f6fc;
+      color: #121826;
+      line-height: 1.4;
+    }
+
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .avatar-circle {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 12px -8px rgba(0, 98, 204, 0.2);
+    }
+
+    .college-info h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1e293b, #2d3a4e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .back-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 48px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .attendance-container {
+      max-width: 1000px;
+      margin: 32px auto;
+      padding: 0 28px;
+    }
+
+    .attendance-card {
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+      padding: 2rem;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 4px solid #16a34a;
+      padding-left: 16px;
+    }
+
+    .face-scan-section {
+      text-align: center;
+      background: #f0fdf4;
+      border: 2px dashed #86efac;
+      border-radius: 20px;
+      padding: 32px;
+      margin: 24px 0;
+    }
+
+    .scan-instruction {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #166534;
+      margin-bottom: 16px;
+    }
+
+    .scan-subtext {
+      color: #4b5563;
+      margin-bottom: 24px;
+    }
+
+    #video {
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      max-width: 100%;
+      height: auto;
+    }
+
+    .scan-btn {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 48px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 20px 0;
+      transition: transform 0.2s;
+    }
+
+    .scan-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .scan-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status-message {
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin: 16px 0;
+      font-weight: 600;
+      display: none;
+    }
+
+    .status-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #f87171;
+    }
+
+    .attendance-history {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .history-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .filter-section {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-input {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .history-table th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .status-present {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-absent {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .location-info {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .export-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 48px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .location-status {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 16px 0;
+      text-align: center;
+      font-weight: 600;
+      color: #92400e;
+    }
+      .attendance-container {
+        padding: 0 16px;
+      }
+
+      .filter-section {
+        flex-direction: column;
+      }
+
+      .face-scan-section {
+        padding: 20px;
+      }
+
+      #video {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="brand-area">
+    <div class="avatar-circle">
+      <img src="https://media.licdn.com/dms/image/v2/C4E0BAQFsniM2KNnvgw/company-logo_200_200/0/1630631339435?e=2147483647&v=beta&t=DCm5fhS1YNa7YhsqIevh3rO4ld7NmHlX7HwLVcWhp4s" alt="MCOERC Logo">
+    </div>
+    <div class="college-info">
+      <h2>Attendance System</h2>
+    </div>
+  </div>
+  <a href="/student" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<div class="attendance-container">
+  <div class="attendance-card">
+    <div class="card-title">
+      <span>📷</span> Face Recognition Attendance
+    </div>
+
+    <div class="face-scan-section">
+      <div class="scan-instruction">👋 Ready to Mark Attendance?</div>
+      <div class="scan-subtext">Position your face in the camera frame and click "Scan Face" to mark your attendance</div>
+
+      <div id="locationStatus" class="location-status">
+        📍 Checking your location...
+      </div>
+
+      <video id="video" width="400" height="300" autoplay muted></video>
+      <br>
+      <button id="scanBtn" class="scan-btn" onclick="scanFace()">🔍 Scan Face & Mark Attendance</button>
+
+      <div id="statusMessage" class="status-message"></div>
+    </div>
+  </div>
+
+  <div class="attendance-history">
+    <div class="history-title">
+      <span>📊</span> Attendance History
+    </div>
+
+    <div class="filter-section">
+      <input type="date" id="startDate" class="filter-input" placeholder="Start Date">
+      <input type="date" id="endDate" class="filter-input" placeholder="End Date">
+      <button class="export-btn" onclick="exportToExcel()">📥 Export to Excel</button>
+    </div>
+
+    <table class="history-table" id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Check-in Time</th>
+          <th>Status</th>
+          <th>Location Verified</th>
+          <th>Face Verified</th>
+        </tr>
+      </thead>
+      <tbody id="attendanceBody">
+        <tr>
+          <td colspan="5" style="text-align: center; color: #6b7280;">Loading attendance records...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  let video = document.getElementById('video');
+  let scanBtn = document.getElementById('scanBtn');
+  let statusMessage = document.getElementById('statusMessage');
+  let stream = null;
+
+  // Access camera
+  async function initCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 400, height: 300, facingMode: 'user' }
+      });
+      video.srcObject = stream;
+    } catch (error) {
+      console.error('Camera access denied:', error);
+      showStatus('Camera access required for attendance marking', 'error');
+      scanBtn.disabled = true;
+    }
+  }
+
+  // Initialize camera on page load
+  initCamera();
+
+  // Get user location
+  let userLocation = null;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        document.getElementById('locationStatus').innerHTML = '✅ Location verified - You are within hostel premises';
+        document.getElementById('locationStatus').style.background = '#d1fae5';
+        document.getElementById('locationStatus').style.borderColor = '#34d399';
+        document.getElementById('locationStatus').style.color = '#065f46';
+      },
+      function(error) {
+        document.getElementById('locationStatus').innerHTML = '❌ Location access required for attendance marking';
+        document.getElementById('locationStatus').style.background = '#fee2e2';
+        document.getElementById('locationStatus').style.borderColor = '#f87171';
+        document.getElementById('locationStatus').style.color = '#991b1b';
+        scanBtn.disabled = true;
+      }
+    );
+  } else {
+    document.getElementById('locationStatus').innerHTML = '❌ Geolocation not supported';
+    scanBtn.disabled = true;
+  }
+
+  function showStatus(message, type) {
+    statusMessage.textContent = message;
+    statusMessage.className = `status-message status-${type}`;
+    statusMessage.style.display = 'block';
+
+    setTimeout(() => {
+      statusMessage.style.display = 'none';
+    }, 5000);
+  }
+
+  async function scanFace() {
+    if (!userLocation) {
+      showStatus('Location access required. Please enable location services.', 'error');
+      return;
+    }
+
+
+    try {
+      // Capture image from video
+      let canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      let ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+
+      let imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+      // Send to server
+      let response = await fetch('/mark_attendance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          face_image: imageData,
+          location_lat: userLocation.lat,
+          location_lng: userLocation.lng
+        })
+      });
+
+      let result = await response.json();
+
+      if (result.success) {
+        showStatus(result.message, 'success');
+        loadAttendanceHistory(); // Refresh the table
+      } else {
+        showStatus(result.message, 'error');
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      showStatus('An error occurred. Please try again.', 'error');
+    } finally {
+      scanBtn.disabled = false;
+      scanBtn.textContent = '🔍 Scan Face & Mark Attendance';
+    }
+  }
+
+  async function loadAttendanceHistory() {
+    try {
+      let startDate = document.getElementById('startDate').value;
+      let endDate = document.getElementById('endDate').value;
+
+      let url = '/get_attendance_report?';
+      if (startDate) url += `start_date=${startDate}&`;
+      if (endDate) url += `end_date=${endDate}&`;
+
+      let response = await fetch(url);
+      let data = await response.json();
+
+      let tbody = document.getElementById('attendanceBody');
+      tbody.innerHTML = '';
+
+      if (data.records.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">No attendance records found</td></tr>';
+        return;
+      }
+
+      data.records.forEach(record => {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record[0]}</td>
+          <td>${record[1] || 'N/A'}</td>
+          <td><span class="status-${record[3].toLowerCase()}">${record[3]}</span></td>
+          <td>${record[4] && record[5] ? '✅' : '❌'}</td>
+          <td>${record[6] ? '✅' : '❌'}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+    } catch (error) {
+      console.error('Error loading attendance:', error);
+    }
+  }
+
+  async function exportToExcel() {
+    try {
+      let startDate = document.getElementById('startDate').value;
+      let endDate = document.getElementById('endDate').value;
+
+      let url = '/export_attendance_excel?';
+      if (startDate) url += `start_date=${startDate}&`;
+      if (endDate) url += `end_date=${endDate}&`;
+
+      let response = await fetch(url);
+      let result = await response.json();
+
+      if (result.success) {
+        // Download the file
+        window.open(`/static/excel/${result.filename}`, '_blank');
+      } else {
+        showStatus('Export failed', 'error');
+      }
+
+    } catch (error) {
+      console.error('Export error:', error);
+      showStatus('Export failed', 'error');
+    }
+  }
+
+  // Load attendance history on page load
+  loadAttendanceHistory();
+
+  // Add event listeners for date filters
+  document.getElementById('startDate').addEventListener('change', loadAttendanceHistory);
+  document.getElementById('endDate').addEventListener('change', loadAttendanceHistory);
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', function() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+  });
+</script>
+
+</body>
+</html>

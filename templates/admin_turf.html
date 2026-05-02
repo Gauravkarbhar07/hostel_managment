@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Turf Bookings</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+<h1>⚽ Turf Bookings</h1>
+<table>
+<tr>
+<th>ID</th>
+<th>Student</th>
+<th>Group</th>
+<th>Slot</th>
+<th>Date</th>
+<th>Amount</th>
+<th>Payment</th>
+<th>Status</th>
+</tr>
+{% for b in bookings %}
+<tr>
+<td>{{ b[0] }}</td>
+<td>{{ b[1] }}</td>
+<td>{{ b[2] }}</td>
+<td>{{ b[3] }}</td>
+<td>{{ b[4] }}</td>
+<td>₹{{ b[5] }}</td>
+<td>{{ b[6] }}</td>
+<td>{{ b[8] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</body>
+</html>

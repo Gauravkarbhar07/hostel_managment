@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dinner Availability</title>
+</head>
+
+<body>
+
+<h2>Dinner Upsend</h2>
+
+<form action="/submit_dinner" method="POST">
+
+<label>Student ID</label><br>
+<input type="number" name="student_id" required><br><br>
+
+<label>Date</label><br>
+<input type="date" name="date" required><br><br>
+
+<label>Dinner Status</label><br>
+
+<select name="status">
+
+<option value="Available">Available</option>
+<option value="Not Available">Not Available</option>
+
+</select>
+
+<br><br>
+
+<button type="submit">Submit</button>
+
+</form>
+
+</body>
+</html>

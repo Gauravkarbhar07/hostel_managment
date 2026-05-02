@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+.dashboard-main {
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.latest-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-left: 5px solid #667eea;
+}
+
+.latest-card h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.card-info {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.info-value {
+    color: #333;
+}
+
+.expand-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.expand-btn:hover {
+    background: #5a6fd8;
+}
+
+.expand-section {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.expand-section.show {
+    display: block;
+}
+
+.buttons-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #ddd;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-group button {
+    flex: 1;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.stat-card p {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+}
+
+.no-data {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-size: 16px;
+}
+.field {
+    margin-bottom: 14px;
+}
+.field label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #444;
+}
+.field input,
+.field textarea,
+.field select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+.field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+.post-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.post-header {
+    padding: 18px 20px 0;
+}
+
+.post-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1f2937;
+}
+
+.post-caption {
+    display: inline-block;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.post-image img {
+    width: 100%;
+    max-height: 240px;
+    display: block;
+    object-fit: cover;
+}
+
+.post-footer {
+    padding: 14px 20px 18px;
+    border-top: 1px solid #eef2ff;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.cards-grid {
+    display: grid;
+    gap: 16px;
+}</style>
+</head>
+<body>
+<div class="dashboard-main">
+<h1>🏢 Admin Dashboard</h1>
+
+<!-- STATS -->
+<div class="stats">
+<div class="stat-card">
+<h3>{{ all_complaints|length }}</h3>
+<p>Total Complaints</p>
+</div>
+<div class="stat-card">
+<h3>{{ available_students }}</h3>
+<p>Available for Dinner</p>
+</div>
+</div>
+
+<!-- BUTTONS SECTION -->
+<div class="buttons-section">
+<div class="btn-group">
+<button class="expand-btn" onclick="toggleSection('attendance')">📊 View All Attendance</button>
+<button class="expand-btn" onclick="toggleSection('complaints')">📝 View All Complaints ({{ all_complaints|length }})</button>
+<button class="expand-btn" onclick="toggleSection('leaves')">🏠 View All Leaves ({{ all_leave_apps|length }})</button>
+<button class="expand-btn" onclick="toggleSection('bookings')">⚽ View All Bookings ({{ all_bookings|length }})</button>
+<button class="expand-btn" onclick="toggleSection('canteen')">🍽️ Canteen Menu</button>
+</div>
+</div>
+
+<!-- EXPANDABLE SECTIONS -->
+
+<!-- ALL ATTENDANCE -->
+<div id="attendance" class="expand-section">
+<h2>📊 All Attendance Records</h2>
+<div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 10px;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+    <div>
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">From Date:</label>
+      <input type="date" id="attendanceStartDate" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+    </div>
+    <div>
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">To Date:</label>
+      <input type="date" id="attendanceEndDate" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+    </div>
+    <div>
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">&nbsp;</label>
+      <button onclick="loadAttendanceRecords()" style="width: 100%; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">🔍 Filter</button>
+    </div>
+  </div>
+  <button onclick="exportAttendanceToExcel()" style="width: 100%; padding: 10px; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 14px;">📥 Export to Excel</button>
+</div>
+<table style="width: 100%; border-collapse: collapse; background: white;">
+<thead>
+  <tr style="background: #f3f4f6;">
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Date</th>
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Student ID</th>
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Student Name</th>
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Check In</th>
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Check Out</th>
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Status</th>
+    <th style="padding: 12px; text-align: left; border: 1px solid #e5e7eb; font-weight: 600;">Face Verified</th>
+  </tr>
+</thead>
+<tbody id="attendanceTableBody">
+  <tr>
+    <td colspan="7" style="padding: 20px; text-align: center; color: #999;">Select dates and click Filter to load attendance records</td>
+  </tr>
+</tbody>
+</table>
+</div>
+
+<!-- ALL COMPLAINTS -->
+<div id="complaints" class="expand-section">
+<h2>📝 All Complaints</h2>
+<div class="cards-grid">
+{% for c in all_complaints %}
+<div class="post-card">
+  <div class="post-header">
+    <div class="post-title">{{ c[4] or 'Complaint from Student ' ~ c[1] }}</div>
+    <div class="post-caption">Student {{ c[1] }}</div>
+  </div>
+  {% if c[5] %}
+  <div class="post-image">
+    <img src="/static/complaint_photos/{{ c[5] }}" alt="Complaint Photo">
+  </div>
+  {% endif %}
+  <div class="post-body">{{ c[2] }}</div>
+  <div class="post-footer">
+    Status: <strong>{{ c[3] }}</strong> · <a href="/solve/{{ c[0] }}">Solve</a>
+  </div>
+</div>
+{% endfor %}
+</div>
+</div>
+
+<!-- ALL LEAVES -->
+<div id="leaves" class="expand-section">
+<h2>🏠 All Leave Applications</h2>
+<table>
+<tr>
+<th>ID</th>
+<th>Student Name</th>
+<th>Student ID</th>
+<th>Room</th>
+<th>From</th>
+<th>To</th>
+<th>Reason</th>
+<th>Parent Contact</th>
+<th>Status</th>
+</tr>
+{% for l in all_leave_apps %}
+<tr>
+<td>{{ l[0] }}</td>
+<td>{{ l[1] }}</td>
+<td>{{ l[2] }}</td>
+<td>{{ l[3] }}</td>
+<td>{{ l[4] }}</td>
+<td>{{ l[5] }}</td>
+<td>{{ l[6] }}</td>
+<td>{{ l[7] }}</td>
+<td>{{ l[8] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- ALL BOOKINGS -->
+<div id="bookings" class="expand-section">
+<h2>⚽ All Turf Bookings</h2>
+<table>
+<tr>
+<th>ID</th>
+<th>Student</th>
+<th>Group</th>
+<th>Slot</th>
+<th>Date</th>
+<th>Amount</th>
+<th>Payment</th>
+<th>Status</th>
+</tr>
+{% for b in all_bookings %}
+<tr>
+<td>{{ b[0] }}</td>
+<td>{{ b[1] }}</td>
+<td>{{ b[2] }}</td>
+<td>{{ b[3] }}</td>
+<td>{{ b[4] }}</td>
+<td>₹{{ b[5] }}</td>
+<td>{{ b[6] }}</td>
+<td>{{ b[8] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- CANTEEN MENU -->
+<div id="canteen" class="expand-section">
+<h2>🍽️ Canteen Menu</h2>
+<p>Update today’s breakfast, lunch, and dinner menu for students.</p>
+<form action="/update_canteen_menu" method="POST">
+<div class="field">
+<label>Menu Date</label>
+<input type="date" name="menu_date" value="{{ today_menu[3] if today_menu else '' or '' }}" required>
+</div>
+<div class="field">
+<label>Breakfast</label>
+<textarea name="breakfast" placeholder="Enter breakfast menu">{{ today_menu[0] if today_menu else '' }}</textarea>
+</div>
+<div class="field">
+<label>Lunch</label>
+<textarea name="lunch" placeholder="Enter lunch menu">{{ today_menu[1] if today_menu else '' }}</textarea>
+</div>
+<div class="field">
+<label>Dinner</label>
+<textarea name="dinner" placeholder="Enter dinner menu">{{ today_menu[2] if today_menu else '' }}</textarea>
+</div>
+<button type="submit" class="expand-btn">Save Canteen Menu</button>
+</form>
+{% if today_menu %}
+<div style="margin-top:20px; padding:16px; background:white; border-radius:10px; border:1px solid #e1e5ff;">
+  <strong>Latest menu for {{ today_menu[3] }} (updated at {{ today_menu[4] }})</strong>
+  <p><strong>Breakfast:</strong> {{ today_menu[0] }}</p>
+  <p><strong>Lunch:</strong> {{ today_menu[1] }}</p>
+  <p><strong>Dinner:</strong> {{ today_menu[2] }}</p>
+</div>
+{% endif %}
+</div>
+
+<!-- SEND ALERT -->
+<div class="latest-card" style="margin-top: 30px;">
+<h3>🚨 Send Red Alert</h3>
+<form action="/send_alert" method="POST">
+<div class="field">
+<label>Message</label>
+<input type="text" name="message" placeholder="Enter Alert Message" required>
+</div>
+<button type="submit" class="expand-btn">Send Alert</button>
+</form>
+</div>
+
+</div>
+
+<script>
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    section.classList.toggle('show');
+}
+
+function loadAttendanceRecords() {
+    const startDate = document.getElementById('attendanceStartDate').value;
+    const endDate = document.getElementById('attendanceEndDate').value;
+    
+    if (!startDate || !endDate) {
+        alert('Please select both start and end dates');
+        return;
+    }
+    
+    const url = `/get_attendance_records?start_date=${startDate}&end_date=${endDate}`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('attendanceTableBody');
+            tbody.innerHTML = '';
+            
+            if (data.records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: #999;">No attendance records found for selected dates</td></tr>';
+                return;
+            }
+            
+            data.records.forEach(record => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #e5e7eb';
+                row.innerHTML = `
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[4]}</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[0]}</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[1]}</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[5]}</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[6]}</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[7]}</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">${record[8] ? '✅ Yes' : '❌ No'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading attendance records');
+        });
+}
+
+function exportAttendanceToExcel() {
+    const startDate = document.getElementById('attendanceStartDate').value;
+    const endDate = document.getElementById('attendanceEndDate').value;
+    
+    if (!startDate || !endDate) {
+        alert('Please select both start and end dates');
+        return;
+    }
+    
+    const url = `/export_attendance_excel?start_date=${startDate}&end_date=${endDate}`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `/static/excel/${data.filename}`;
+            } else {
+                alert('Error exporting attendance');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error exporting attendance');
+        });
+}
+</script>
+</body>
+</html>
