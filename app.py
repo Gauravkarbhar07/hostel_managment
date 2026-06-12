@@ -20,7 +20,7 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'please-change-this-sec
 
 # Create upload directory if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # MySQL Connection (configured via environment variables)
 DB_HOST = os.getenv('DB_HOST', 'localhost')
